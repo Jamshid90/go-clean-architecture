@@ -1,0 +1,39 @@
+[clinic]
+id           = "7vGA4I1gYGgsA7fs"
+sha512secret = "UGqgnbUStQWhK7pg"
+
+[jwt]
+secret = "rDiHRMSRI_Ackzdg"
+ttl    = "10080"
+
+[server]
+protocol   = "http"
+host       = "localhost"
+port       = "9000"
+sslcert    = ""
+sslprivkey = ""
+
+[database]
+host         = "127.0.0.1"
+port         = "5433"
+user         = "medhub"
+dbname       = "clean_architecture"
+password     = "1111"
+sslmode      = "disable"
+
+[language]
+default      = "ru"
+
+[webdav]
+prefix       = "/webdav"
+root         = "./webdav"
+
+[replication]
+protocol  = "http"
+host      = "localhost:9000"
+server    = true
+
+
+
+
+
