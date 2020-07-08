@@ -1,0 +1,6 @@
+config.tomlx
+*.DS_Store
+.vscode
+.idea
+.idea/
+__MACOSX/
