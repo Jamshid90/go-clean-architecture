@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	ErrUnprocessableEntity = errors.New(GetHTTPStatusText(http.StatusUnprocessableEntity))
 	ErrInternalServerError = errors.New(GetHTTPStatusText(http.StatusInternalServerError))
 	BadRequest             = errors.New(GetHTTPStatusText(http.StatusBadRequest))
 	ErrBadParamInput       = errors.New("Given Param is not valid")
@@ -59,10 +60,9 @@ func NewErrValidation() *ErrValidation {
 
 type ErrValidation struct {
 	Err    error
-	Text   string
 	Errors map[string]interface{}
 }
 
 func (e ErrValidation) Error() string {
-	return e.Err.Error()
+	return ErrUnprocessableEntity.Error()
 }

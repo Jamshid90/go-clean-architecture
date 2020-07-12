@@ -4,8 +4,8 @@ import (
 	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
 	"github.com/Jamshid90/go-clean-architecture/pkg/request"
 	"github.com/Jamshid90/go-clean-architecture/pkg/response"
+	"github.com/Jamshid90/go-clean-architecture/pkg/validation"
 	"github.com/go-chi/chi"
-	"github.com/go-playground/validator/v10"
 	"net/http"
 	"strconv"
 )
@@ -48,18 +48,17 @@ func (uh *UserHandler) convertItems(items []*domain.User) []*User  {
 }
 
 // store
-func (uh *UserHandler) store() http.HandlerFunc  {
+func (uh *UserHandler) store() http.HandlerFunc {
 
-	validate := validator.New()
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		var userRequest createUserRequest
+		var userRequest CreateUserRequest
 		if err := request.DecodeJson(r, &userRequest); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
 
-		if err := validate.Struct(userRequest); err != nil {
+		if err := validation.Validator(&userRequest); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
@@ -85,17 +84,15 @@ func (uh *UserHandler) store() http.HandlerFunc  {
 
 // update
 func (uh *UserHandler) update() http.HandlerFunc  {
-
-	validate := validator.New()
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		var userRequest updateUserRequest
+		var userRequest UpdateUserRequest
 		if err := request.DecodeJson(r, &userRequest); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
 
-		if err := validate.Struct(userRequest); err != nil {
+		if err := validation.Validator(&userRequest); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}

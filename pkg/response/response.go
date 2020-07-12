@@ -3,15 +3,14 @@ package response
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
 	"github.com/Jamshid90/go-clean-architecture/pkg/request"
 	"github.com/go-playground/validator/v10"
 	"net/http"
-	"reflect"
 )
 
 var (
+	errValidation    *domain.ErrValidation
 	errConflict      *domain.ErrConflict
 	errNotFound      *domain.ErrNotFound
 	errRepository    domain.ErrRepository
@@ -31,7 +30,7 @@ func GetStatusCodeErr(err error) int {
 		return http.StatusOK
 	}
 
-	fmt.Println("GetStatusCodeErr", reflect.TypeOf(err))
+	//fmt.Println("GetStatusCodeErr", reflect.TypeOf(err))
 
 	switch {
 	// Error Bad Request
@@ -49,6 +48,10 @@ func GetStatusCodeErr(err error) int {
 	// Error Not Found
 	case errors.As(err, &errNotFound):
 		return http.StatusNotFound
+
+	// Error Validation
+	case errors.As(err, &errValidation):
+		return http.StatusUnprocessableEntity
 
 	// Error Repository
 	case errors.As(err, &errRepository):
@@ -73,17 +76,14 @@ func Error(w http.ResponseWriter, r *http.Request, err error, status int)  {
 		Error: err.Error(),
 	}
 
-/*
-	switch err.(type) {
-
-	case *errors.MyError:
-		response := ResponseJSON{
-			Status:"error",
-			Error: err.Error(),
-		}
-	
+	switch {
+		case errors.As(err, &errValidation):
+			response = ResponseJSON{
+				Status:"errors",
+				Error:  errValidation.Error(),
+				Errors: errValidation.Errors,
+			}
 	}
-*/
 
 	json.NewEncoder(w).Encode(response)
 }

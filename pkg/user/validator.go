@@ -1,6 +1,6 @@
 package user
 
-type createUserRequest struct {
+type CreateUserRequest struct {
 	Status    string `json:"status" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
 	FirstName string `json:"first_name" validate:"required,min=2,max=50"`
@@ -9,7 +9,7 @@ type createUserRequest struct {
 	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,eqfield=Password"`
 }
 
-type updateUserRequest struct {
+type UpdateUserRequest struct {
 	ID        uint64 `json:"id" validate:"required"`
 	Status    string `json:"status" validate:"required"`
 	Email     string `json:"email" validate:"required,email"`
