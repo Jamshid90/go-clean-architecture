@@ -44,7 +44,11 @@ func (e *ErrConflict) Error() string {
 	return e.name + " already exist"
 }
 
-// Error repository
+// Error Repository
+func NewErrRepository(err error) error {
+	return &ErrRepository{Err:err}
+}
+
 type ErrRepository struct {
 	Err error
 }

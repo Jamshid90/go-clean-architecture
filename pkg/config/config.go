@@ -3,17 +3,10 @@ package config
 import (
 	"github.com/BurntSushi/toml"
 	"strings"
+	"time"
 )
 
 type Config struct {
-	Clinic struct {
-		ID           string `toml:"id"`
-		Sha512Secret string `toml:"sha512secret"`
-	} `toml:"clinic"`
-	Jwt struct {
-		Secret string `toml:"secret"`
-		TTL    string `toml:"ttl"`
-	} `toml:"jwt"`
 	Server struct {
 		Protocol   string `toml:"protocol"`
 		Host       string `toml:"host"`
@@ -29,19 +22,14 @@ type Config struct {
 		Password string `toml:"password"`
 		Sslmode  string `toml:"sslmode"`
 	} `toml:"database"`
-	Language struct {
-		Default string `toml:"default"`
-		Active  string
-	} `toml:"language"`
-	WebDav struct {
-		Prefix string `toml:"prefix"`
-		Root   string `toml:"root"`
-	} `toml:"webdav"`
-	Replication struct{
-		Protocol   string `toml:"protocol"`
-		Host       string `toml:"host"`
-		Server     bool   `toml:"server"`
-	}
+	Context struct {
+		Timeout     time.Duration `toml:"timeout"`
+	} `toml:"context"`
+
+	Jwt struct {
+		Secret string `toml:"secret"`
+		TTL    string `toml:"ttl"`
+	} `toml:"jwt"`
 }
 
 func NewConfig(filePath string) (*Config, error) {

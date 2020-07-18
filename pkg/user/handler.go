@@ -63,6 +63,7 @@ func (uh *UserHandler) store() http.HandlerFunc {
 			return
 		}
 
+		ctx  := r.Context()
 		user := domain.User{
 			Status    : userRequest.Status,
 			Email     : userRequest.Email,
@@ -70,7 +71,7 @@ func (uh *UserHandler) store() http.HandlerFunc {
 			LastName  : userRequest.LastName,
 			Password  : userRequest.Password,
 		}
-		if err := uh.UserUsecase.Store(&user); err != nil {
+		if err := uh.UserUsecase.Store(ctx, &user); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
@@ -97,6 +98,7 @@ func (uh *UserHandler) update() http.HandlerFunc  {
 			return
 		}
 
+		ctx  := r.Context()
 		user := domain.User{
 			ID        : userRequest.ID,
 			Status    : userRequest.Status,
@@ -105,7 +107,7 @@ func (uh *UserHandler) update() http.HandlerFunc  {
 			LastName  : userRequest.LastName,
 		}
 
-		if err := uh.UserUsecase.Update(&user); err != nil {
+		if err := uh.UserUsecase.Update(ctx, &user); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
@@ -120,14 +122,15 @@ func (uh *UserHandler) update() http.HandlerFunc  {
 // delete
 func (uh *UserHandler) delete() http.HandlerFunc  {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.ParseUint(chi.URLParam(r, "id"), 0, 64)
+		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 0, 64)
 		if err != nil {
 			err := domain.NewErrNotFound("user")
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
 
-		if err := uh.UserUsecase.Delete(id); err != nil {
+		ctx  := r.Context()
+		if err := uh.UserUsecase.Delete(ctx, id); err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
@@ -141,14 +144,15 @@ func (uh *UserHandler) delete() http.HandlerFunc  {
 // find
 func (uh *UserHandler) find() http.HandlerFunc  {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := strconv.ParseUint(chi.URLParam(r, "id"), 0, 64)
+		id, err := strconv.ParseInt(chi.URLParam(r, "id"), 0, 64)
 		if err != nil {
 			err := domain.NewErrNotFound("user")
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
 
-		user, err := uh.UserUsecase.Find(id)
+		ctx  := r.Context()
+		user, err := uh.UserUsecase.Find(ctx, id)
 		if  err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
@@ -182,7 +186,8 @@ func (uh *UserHandler) findAll() http.HandlerFunc  {
 			params[i] = v
 		}
 
-		items, err := uh.UserUsecase.FindAll(limit, offset, params)
+		ctx  := r.Context()
+		items, err := uh.UserUsecase.FindAll(ctx, limit, offset, params)
 		if  err != nil {
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return

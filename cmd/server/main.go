@@ -1,15 +1,17 @@
 package main
 
 import (
-	"log"
+	"context"
 	"flag"
-	"database/sql"
-	_ "github.com/lib/pq"
-	"github.com/go-chi/chi"
-	"github.com/Jamshid90/go-clean-architecture/pkg/user"
 	"github.com/Jamshid90/go-clean-architecture/pkg/config"
-	"github.com/Jamshid90/go-clean-architecture/pkg/server"
 	"github.com/Jamshid90/go-clean-architecture/pkg/middleware"
+	"github.com/Jamshid90/go-clean-architecture/pkg/server"
+	"github.com/Jamshid90/go-clean-architecture/pkg/user"
+	"github.com/go-chi/chi"
+	"github.com/jackc/pgx/v4"
+	_ "github.com/lib/pq"
+	"log"
+	"os"
 )
 
 var (
@@ -26,34 +28,48 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// initialization database
-	db, err := sql.Open("postgres", config.GetPsqlConnStr())
+	// connect pgx
+	conn, err := pgx.Connect(context.Background(), config.GetPsqlConnStr())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
 	}
-	defer db.Close()
+	defer conn.Close(context.Background())
 
-	err = db.Ping()
+	err = conn.Ping(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	/*
+	//connect pq
+	conn, err := sql.Open("postgres", config.GetPsqlConnStr())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	err = conn.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	*/
 
 	r := chi.NewRouter()
 
 	// initialization repositorys
-	//resourceRepo := postgresql.NewPostgresqlResourceRepository(db)
-	userRepo     := user.NewPostgresqlUserRepository(db)
+	userRepo := user.NewPgxUserRepository(conn)
 
 	// initialization usecase
-	//rUsecase     := usecase.NewResourceUsecase(resourceRepo)
-	userUsecase  := user.NewUserUsecase(userRepo)
+	userUsecase := user.NewUserUsecase(userRepo, config.Context.Timeout)
 
 	r.Route("/api", func(r chi.Router) {
-		// initialization api handlers
-		//http.NewresourceHandler(r, &rUsecase)
+
+		// initialization api middleware
 		r.Use(middleware.Cors)
 		r.Use(middleware.ContentTypeJson)
 
+		// initialization api handlers
 		user.NewUserHandler(r, &userUsecase)
 	})
 

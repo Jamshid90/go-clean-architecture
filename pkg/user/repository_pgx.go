@@ -2,21 +2,22 @@ package user
 
 import (
 	"context"
-	"fmt"
 	"database/sql"
+	"fmt"
 	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/jackc/pgx/v4"
 )
 
-type postgresqlUserRepository struct {
-	Conn *sql.DB
+type pgxUserRepository struct {
+	Conn *pgx.Conn
 }
 
-func NewPostgresqlUserRepository(conn *sql.DB) domain.UserRepository {
-	return &postgresqlUserRepository{Conn: conn}
+func NewPgxUserRepository(conn *pgx.Conn) domain.UserRepository {
+	return &pgxUserRepository{Conn: conn}
 }
 
-func (p *postgresqlUserRepository) Store(ctx context.Context, m *domain.User) error {
-	err := p.Conn.QueryRowContext(ctx,`INSERT INTO public."user"(
+func (p *pgxUserRepository) Store(ctx context.Context, m *domain.User) error {
+	err := p.Conn.QueryRow(ctx,`INSERT INTO public."user"(
 		status, email, first_name, last_name, password, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id;`,
 		m.Status,
@@ -35,8 +36,8 @@ func (p *postgresqlUserRepository) Store(ctx context.Context, m *domain.User) er
 	return nil
 }
 
-func (p *postgresqlUserRepository) Update(ctx context.Context, m *domain.User) error {
-	_, err := p.Conn.ExecContext(ctx,`UPDATE "user" SET status=$1, email=$2, first_name=$3, last_name=$4, updated_at=$5 WHERE id=$6`,
+func (p *pgxUserRepository) Update(ctx context.Context, m *domain.User) error {
+	_, err := p.Conn.Exec(ctx,`UPDATE "user" SET status=$1, email=$2, first_name=$3, last_name=$4, updated_at=$5 WHERE id=$6`,
 		m.Status,
 		m.Email,
 		m.FirstName,
@@ -52,16 +53,16 @@ func (p *postgresqlUserRepository) Update(ctx context.Context, m *domain.User) e
 	return nil
 }
 
-func (p *postgresqlUserRepository) Delete(ctx context.Context, id int64) error {
-	if _, err := p.Conn.ExecContext(ctx,`DELETE FROM "user" WHERE id=$1`, id); err != nil {
+func (p *pgxUserRepository) Delete(ctx context.Context, id int64) error {
+	if _, err := p.Conn.Exec(ctx,`DELETE FROM "user" WHERE id=$1`, id); err != nil {
 		return domain.ErrRepository{Err:fmt.Errorf("error during delete to user repository: %w", err)}
 	}
 	return nil
 }
 
-func (p *postgresqlUserRepository) Find(ctx context.Context, id int64) (*domain.User, error) {
+func (p *pgxUserRepository) Find(ctx context.Context, id int64) (*domain.User, error) {
 	user := domain.User{}
-	row := p.Conn.QueryRowContext(ctx,`SELECT id, status, email, first_name, last_name, password, created_at, updated_at FROM "user" WHERE id=$1`, id)
+	row := p.Conn.QueryRow(ctx,`SELECT id, status, email, first_name, last_name, password, created_at, updated_at FROM "user" WHERE id=$1`, id)
 
 	err := row.Scan(
 		&user.ID,
@@ -85,9 +86,9 @@ func (p *postgresqlUserRepository) Find(ctx context.Context, id int64) (*domain.
 	return &user, nil
 }
 
-func (p *postgresqlUserRepository) FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*domain.User, error) {
+func (p *pgxUserRepository) FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*domain.User, error) {
 	var items []*domain.User
-	rows, err := p.Conn.QueryContext(ctx, `SELECT id, status, email, first_name, last_name, created_at, updated_at FROM "user" LIMIT $1 OFFSET $2`, limit, offset)
+	rows, err := p.Conn.Query(ctx, `SELECT id, status, email, first_name, last_name, created_at, updated_at FROM "user" LIMIT $1 OFFSET $2`, limit, offset)
 	if err != nil {
 		return items, domain.ErrRepository{Err:fmt.Errorf("error during find all to user repository: %w", err)}
 	}
@@ -110,10 +111,10 @@ func (p *postgresqlUserRepository) FindAll(ctx context.Context, limit, offset in
 	return items, nil
 }
 
-func (p *postgresqlUserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (p *pgxUserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
 
 	user := domain.User{}
-	row := p.Conn.QueryRowContext(ctx, `SELECT id, status, email, first_name, last_name, created_at, updated_at FROM "user" WHERE email=$1`, email)
+	row := p.Conn.QueryRow(ctx, `SELECT id, status, email, first_name, last_name, created_at, updated_at FROM "user" WHERE email=$1`, email)
 	err := row.Scan(
 		&user.ID,
 		&user.Status,

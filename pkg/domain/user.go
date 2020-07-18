@@ -1,9 +1,12 @@
 package domain
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type User struct {
-	ID          uint64
+	ID          int64
 	Email       string
 	Status      string
 	FirstName   string
@@ -14,18 +17,18 @@ type User struct {
 }
 
 type UserUsecase interface {
-	Store(*User) error
-	Update(*User) error
-	Delete(uint64) error
-	Find (uint64) (*User, error)
-	FindAll(limit, offset int, params map[string]interface{}) ([]*User, error)
+	Store(ctx context.Context, user *User) error
+	Update(ctx context.Context, user *User) error
+	Delete(ctx context.Context, id int64) error
+	Find (ctx context.Context, id int64) (*User, error)
+	FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*User, error)
 }
 
 type UserRepository interface {
-	Store(*User) error
-	Update(*User) error
-	Delete(uint64) error
-	Find(uint64) (*User, error)
-	FindAll(limit, offset int, params map[string]interface{}) ([]*User, error)
-	FindByEmail (string) (*User, error)
+	Store(ctx context.Context, user *User) error
+	Update(ctx context.Context, user *User) error
+	Delete(ctx context.Context, id int64) error
+	Find(ctx context.Context, id int64) (*User, error)
+	FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*User, error)
+	FindByEmail (ctx context.Context, email string) (*User, error)
 }
