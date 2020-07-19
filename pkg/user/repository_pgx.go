@@ -1,11 +1,10 @@
 package user
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"context"
 	"github.com/jackc/pgx/v4"
+	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
 )
 
 type pgxUserRepository struct {
@@ -75,7 +74,7 @@ func (p *pgxUserRepository) Find(ctx context.Context, id int64) (*domain.User, e
 		&user.UpdatedAt,
 	)
 
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, domain.NewErrNotFound("user")
 	}
 
@@ -112,20 +111,20 @@ func (p *pgxUserRepository) FindAll(ctx context.Context, limit, offset int, para
 }
 
 func (p *pgxUserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
-
 	user := domain.User{}
-	row := p.Conn.QueryRow(ctx, `SELECT id, status, email, first_name, last_name, created_at, updated_at FROM "user" WHERE email=$1`, email)
+	row := p.Conn.QueryRow(ctx, `SELECT id, status, email, first_name, last_name, password, created_at, updated_at FROM "user" WHERE email=$1`, email)
 	err := row.Scan(
 		&user.ID,
 		&user.Status,
 		&user.Email,
 		&user.FirstName,
 		&user.LastName,
+		&user.Password,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	)
 
-	if err == sql.ErrNoRows {
+	if err == pgx.ErrNoRows {
 		return nil, domain.NewErrNotFound("user")
 	}
 

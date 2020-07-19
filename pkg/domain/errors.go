@@ -10,7 +10,9 @@ var (
 	ErrUnprocessableEntity = errors.New(GetHTTPStatusText(http.StatusUnprocessableEntity))
 	ErrInternalServerError = errors.New(GetHTTPStatusText(http.StatusInternalServerError))
 	BadRequest             = errors.New(GetHTTPStatusText(http.StatusBadRequest))
-	ErrBadParamInput       = errors.New("Given Param is not valid")
+	ErrBadParamInput       = errors.New("Given param is not valid")
+	ErrInvalidEmailOrPassword = errors.New("invalid email or password")
+
 )
 
 // Get http status text

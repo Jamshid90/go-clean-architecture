@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/hash"
 	"time"
 )
 
@@ -19,9 +20,18 @@ func NewUserUsecase(userRepo domain.UserRepository, timeout time.Duration) userU
 }
 
 // Before Store
-func (u *userUsecase) BeforeStore(m *domain.User) {
+func (u *userUsecase) BeforeStore(m *domain.User) error {
+
 	m.CreatedAt = time.Now().UTC()
 	m.UpdatedAt = m.CreatedAt
+
+	hashPassword, err := hash.HashPassword(m.Password)
+	if err != nil {
+		return err
+	}
+	m.Password = hashPassword
+
+	return nil
 }
 
 // Store
@@ -29,8 +39,9 @@ func (u *userUsecase) Store(ctx context.Context, m *domain.User) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
-	user, err := u.userRepo.FindByEmail(ctx ,m.Email)
-	if err != nil {
+	user, err := u.userRepo.FindByEmail(ctx, m.Email)
+
+	if err != nil && err.Error() != domain.NewErrNotFound("user").Error() {
 		return err
 	}
 
@@ -38,7 +49,10 @@ func (u *userUsecase) Store(ctx context.Context, m *domain.User) error {
 		return domain.NewErrConflict("email")
 	}
 
-	u.BeforeStore(m)
+	if err := u.BeforeStore(m); err != nil {
+		return err
+	}
+
 	return u.userRepo.Store(ctx, m)
 }
 
@@ -85,10 +99,18 @@ func (u *userUsecase) Find(ctx context.Context, id int64) (*domain.User, error) 
 	return u.userRepo.Find(ctx, id)
 }
 
-// FindAll
+// Find All
 func (u *userUsecase) FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
 	return u.userRepo.FindAll(ctx, limit, offset, params)
+}
+
+// Find By Email
+func (u *userUsecase) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
+	defer cancel()
+
+	return u.userRepo.FindByEmail(ctx, email)
 }

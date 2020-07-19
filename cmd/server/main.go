@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"github.com/Jamshid90/go-clean-architecture/pkg/auth"
 	"github.com/Jamshid90/go-clean-architecture/pkg/config"
 	"github.com/Jamshid90/go-clean-architecture/pkg/middleware"
 	"github.com/Jamshid90/go-clean-architecture/pkg/server"
@@ -69,8 +70,12 @@ func main() {
 		r.Use(middleware.Cors)
 		r.Use(middleware.ContentTypeJson)
 
-		// initialization api handlers
+		// initialization user handlers
 		user.NewUserHandler(r, &userUsecase)
+
+		// initialization auth handlers
+		auth.NewAuthHandler(r, &userUsecase)
+
 	})
 
 	// initialization server
