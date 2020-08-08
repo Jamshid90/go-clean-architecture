@@ -1,13 +1,9 @@
-.PHONY:run
-.PHONY: build
-.PHONY: test
+.PHONY: run, build
 
-
-run:
-	go run cmd/server/main.go
+.DEFAULT_GOAL = build
 
 build:
-	go build -o server -ldflags="-s -w" cmd/main.go
+	go build -o server -ldflags="-s -w" cmd/http/main.go
 
-test:
-	go test -v
+run:
+	go run cmd/http/main.go

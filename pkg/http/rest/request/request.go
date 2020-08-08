@@ -6,30 +6,22 @@ import (
 	"errors"
 	"net/http"
 	"encoding/json"
+	apperrors "github.com/Jamshid90/go-clean-architecture/pkg/errors"
 )
 
 var (
 	syntaxError *json.SyntaxError
 )
 
-type ErrBadRequest struct {
-	Err     error
-	Message string
-}
-
-func (e ErrBadRequest) Error() string  {
-	return e.Message
-}
-
-func DecodeJson(r *http.Request, v interface{}) error{
+func DecodeJson(r *http.Request, v interface{}) error {
 	if err := json.NewDecoder(r.Body).Decode(v); err != nil {
 		switch {
 		case errors.As(err, &syntaxError):
 			msg := fmt.Sprintf("request body contains badly-formed JSON (at position %d)", syntaxError.Offset)
-			return &ErrBadRequest{Err: err, Message: msg}
+			return &apperrors.ErrBadRequest{Err: err, Message: msg}
 		case errors.Is(err, io.EOF):
 			msg := "request body must not be empty"
-			return &ErrBadRequest{Err: err, Message: msg}
+			return &apperrors.ErrBadRequest{Err: err, Message: msg}
 		default:
 			return err
 		}

@@ -1,4 +1,4 @@
-package domain
+package errors
 
 import (
 	"errors"
@@ -7,12 +7,12 @@ import (
 )
 
 var (
+	ErrUnauthorized        = errors.New(GetHTTPStatusText(http.StatusUnauthorized))
 	ErrUnprocessableEntity = errors.New(GetHTTPStatusText(http.StatusUnprocessableEntity))
 	ErrInternalServerError = errors.New(GetHTTPStatusText(http.StatusInternalServerError))
 	BadRequest             = errors.New(GetHTTPStatusText(http.StatusBadRequest))
 	ErrBadParamInput       = errors.New("Given param is not valid")
 	ErrInvalidEmailOrPassword = errors.New("invalid email or password")
-
 )
 
 // Get http status text
@@ -71,4 +71,14 @@ type ErrValidation struct {
 
 func (e ErrValidation) Error() string {
 	return ErrUnprocessableEntity.Error()
+}
+
+// Error bad request
+type ErrBadRequest struct {
+	Err     error
+	Message string
+}
+
+func (e ErrBadRequest) Error() string  {
+	return e.Message
 }

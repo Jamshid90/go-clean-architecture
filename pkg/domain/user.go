@@ -11,12 +11,15 @@ const (
 )
 
 type User struct {
-	ID          int64
+	ID          string
 	Email       string
+	Phone       string
+	Gender      string
 	Status      string
 	FirstName   string
 	LastName    string
 	Password    string
+	BirthDate   time.Time
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -24,8 +27,8 @@ type User struct {
 type UserUsecase interface {
 	Store(ctx context.Context, user *User) error
 	Update(ctx context.Context, user *User) error
-	Delete(ctx context.Context, id int64) error
-	Find (ctx context.Context, id int64) (*User, error)
+	Delete(ctx context.Context, id string) error
+	Find (ctx context.Context, id string) (*User, error)
 	FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*User, error)
 	FindByEmail (ctx context.Context, email string) (*User, error)
 }
@@ -33,8 +36,8 @@ type UserUsecase interface {
 type UserRepository interface {
 	Store(ctx context.Context, user *User) error
 	Update(ctx context.Context, user *User) error
-	Delete(ctx context.Context, id int64) error
-	Find(ctx context.Context, id int64) (*User, error)
+	Delete(ctx context.Context, id string) error
+	Find(ctx context.Context, id string) (*User, error)
 	FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*User, error)
 	FindByEmail (ctx context.Context, email string) (*User, error)
 }

@@ -25,10 +25,10 @@ type Config struct {
 	Context struct {
 		Timeout     time.Duration `toml:"timeout"`
 	} `toml:"context"`
-
 	Jwt struct {
 		Secret string `toml:"secret"`
-		TTL    string `toml:"ttl"`
+		AccessTTL string `toml:"access_ttl"`
+		RefreshTTL string `toml:"refresh_ttl"`
 	} `toml:"jwt"`
 }
 

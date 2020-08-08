@@ -3,7 +3,9 @@ package user
 import (
 	"context"
 	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/Jamshid90/go-clean-architecture/pkg/hash"
+	"github.com/Jamshid90/go-clean-architecture/pkg/rand"
 	"time"
 )
 
@@ -11,16 +13,32 @@ type userUsecase struct {
 	userRepo domain.UserRepository
 	contextTimeout time.Duration
 }
-// New User Usecase
-func NewUserUsecase(userRepo domain.UserRepository, timeout time.Duration) userUsecase  {
+// new user usecase
+func NewUserUsecase(repo domain.UserRepository, timeout time.Duration) userUsecase  {
 	return userUsecase{
-		userRepo: userRepo,
+		userRepo: repo,
 		contextTimeout: timeout,
 	}
 }
 
-// Before Store
-func (u *userUsecase) BeforeStore(m *domain.User) error {
+// get new id
+func (u *userUsecase) NewID(ctx context.Context) (string, error) {
+	var id = rand.RandString(16)
+	user, err := u.Find(ctx, id)
+
+	if err != nil && err.Error() != errors.NewErrNotFound("user").Error() {
+		return "", err
+	}
+
+	if user != nil {
+		return u.NewID(ctx)
+	}
+
+	return id, nil
+}
+
+// before store
+func (u *userUsecase) BeforeStore(ctx context.Context, m *domain.User) error {
 
 	m.CreatedAt = time.Now().UTC()
 	m.UpdatedAt = m.CreatedAt
@@ -31,32 +49,37 @@ func (u *userUsecase) BeforeStore(m *domain.User) error {
 	}
 	m.Password = hashPassword
 
+	m.ID, err = u.NewID(ctx)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-// Store
+// store
 func (u *userUsecase) Store(ctx context.Context, m *domain.User) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
 	user, err := u.userRepo.FindByEmail(ctx, m.Email)
 
-	if err != nil && err.Error() != domain.NewErrNotFound("user").Error() {
+	if err != nil && err.Error() != errors.NewErrNotFound("user").Error() {
 		return err
 	}
 
 	if user != nil {
-		return domain.NewErrConflict("email")
+		return errors.NewErrConflict("email")
 	}
 
-	if err := u.BeforeStore(m); err != nil {
+	if err := u.BeforeStore(ctx, m); err != nil {
 		return err
 	}
 
 	return u.userRepo.Store(ctx, m)
 }
 
-// Update
+// update
 func (u *userUsecase) Update(ctx context.Context, m *domain.User) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
@@ -67,15 +90,15 @@ func (u *userUsecase) Update(ctx context.Context, m *domain.User) error {
 	}
 
 	if userByEmail, _ := u.userRepo.FindByEmail(ctx, m.Email); userByEmail != nil && userByEmail.ID != user.ID {
-		return  domain.NewErrConflict("email")
+		return  errors.NewErrConflict("email")
 	}
 	m.CreatedAt = user.CreatedAt
 	m.UpdatedAt = time.Now().UTC()
 	return u.userRepo.Update(ctx, m)
 }
 
-// Delete
-func (u *userUsecase) Delete(ctx context.Context, id int64) error {
+// delete
+func (u *userUsecase) Delete(ctx context.Context, id string) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -85,21 +108,21 @@ func (u *userUsecase) Delete(ctx context.Context, id int64) error {
 	}
 
 	if *existedUser == (domain.User{}) {
-		return domain.NewErrNotFound("user")
+		return errors.NewErrNotFound("user")
 	}
 
 	return u.userRepo.Delete(ctx, id)
 }
 
-// Find
-func (u *userUsecase) Find(ctx context.Context, id int64) (*domain.User, error) {
+// find
+func (u *userUsecase) Find(ctx context.Context, id string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
 	return u.userRepo.Find(ctx, id)
 }
 
-// Find All
+// find all
 func (u *userUsecase) FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
@@ -107,7 +130,7 @@ func (u *userUsecase) FindAll(ctx context.Context, limit, offset int, params map
 	return u.userRepo.FindAll(ctx, limit, offset, params)
 }
 
-// Find By Email
+// find by email
 func (u *userUsecase) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()

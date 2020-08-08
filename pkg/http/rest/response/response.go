@@ -3,18 +3,17 @@ package response
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
-	"github.com/Jamshid90/go-clean-architecture/pkg/request"
+	apperrors "github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/go-playground/validator/v10"
 	"net/http"
 )
 
 var (
-	errValidation    *domain.ErrValidation
-	errConflict      *domain.ErrConflict
-	errNotFound      *domain.ErrNotFound
-	errRepository    domain.ErrRepository
-	errBadRequest    *request.ErrBadRequest
+	errValidation    *apperrors.ErrValidation
+	errConflict      *apperrors.ErrConflict
+	errNotFound      *apperrors.ErrNotFound
+	errRepository    apperrors.ErrRepository
+	errBadRequest    *apperrors.ErrBadRequest
 	validationErrors validator.ValidationErrors
 )
 
@@ -69,7 +68,7 @@ func Json(w http.ResponseWriter, r *http.Request, status int, data interface{}) 
 	json.NewEncoder(w).Encode(data)
 }
 
-func Error(w http.ResponseWriter, r *http.Request, err error, status int)  {
+func Error(w http.ResponseWriter, r *http.Request, err error, status int) {
 	w.WriteHeader(status)
 	response := ResponseJSON{
 		Status:"error",

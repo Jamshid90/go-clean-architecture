@@ -12,9 +12,14 @@ import (
 )
 
 func TestBeforeStore(t *testing.T) {
+
 	mockUser := TestUser(t)
-	userUse := new(userUsecase)
-	userUse.BeforeStore(mockUser)
+
+	mockUserRepo := new(mocks.UserRepository)
+	mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
+
+	userUse := NewUserUsecase(mockUserRepo, time.Second*2)
+	userUse.BeforeStore(context.Background(), mockUser)
 
 	assert := assert.New(t)
 	assert.NotEmpty(mockUser.CreatedAt)
@@ -27,6 +32,7 @@ func TestStore(t *testing.T) {
 	mockUser := TestUser(t)
 
 	t.Run("success", func(t *testing.T) {
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
 		mockUserRepo.On("Store", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil).Once()
 
@@ -39,21 +45,21 @@ func TestStore(t *testing.T) {
 	})
 
 	t.Run("error-email-already-exist", func(t *testing.T) {
-		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), domain.NewErrConflict("email")).Once()
+		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), errors.NewErrConflict("email")).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Store(context.TODO(), mockUser)
 
 		assert := assert.New(t)
 		assert.Error(err)
-		assert.Equal(err, domain.NewErrConflict("email"))
+		assert.Equal(err, errors.NewErrConflict("email"))
 
 		mockUserRepo.AssertExpectations(t)
 	})
 
 	t.Run("error-happens-in-db", func(t *testing.T) {
-		errRepository := domain.NewErrRepository(errors.New("Unexpected error"))
-
+		errRepository := errors.NewErrRepository(errors.New("Unexpected error"))
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
 		mockUserRepo.On("Store", mock.Anything, mock.AnythingOfType("*domain.User")).Return(errRepository).Once()
 
@@ -73,7 +79,7 @@ func TestUpdate(t *testing.T) {
 	mockUser := TestUser(t)
 
 	t.Run("success", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(mockUser, nil).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		mockUserRepo.On("Update", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil).Once()
 
@@ -86,37 +92,37 @@ func TestUpdate(t *testing.T) {
 	})
 
 	t.Run("error-not-found", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(TestUserEmpty(t), domain.NewErrNotFound("user")).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), errors.NewErrNotFound("user")).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Update(context.TODO(), mockUser)
 
 		assert := assert.New(t)
 		assert.Error(err)
-		assert.Equal(err, domain.NewErrNotFound("user"))
+		assert.Equal(err, errors.NewErrNotFound("user"))
 
 		mockUserRepo.AssertExpectations(t)
 	})
 
 	t.Run("error-email-already-exist", func(t *testing.T) {
 
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(mockUser, nil).Once()
-		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), domain.NewErrConflict("email")).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
+		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), errors.NewErrConflict("email")).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Update(context.TODO(), mockUser)
 
 		assert := assert.New(t)
 		assert.Error(err)
-		assert.Equal(err, domain.NewErrConflict("email"))
+		assert.Equal(err, errors.NewErrConflict("email"))
 
 		mockUserRepo.AssertExpectations(t)
 	})
 
 	t.Run("error-happens-in-db", func(t *testing.T) {
-		errRepository := domain.NewErrRepository(errors.New("Unexpected error"))
+		errRepository := errors.NewErrRepository(errors.New("Unexpected error"))
 
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(mockUser, nil).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		mockUserRepo.On("Update", mock.Anything, mock.AnythingOfType("*domain.User")).Return(errRepository).Once()
 
@@ -137,8 +143,8 @@ func TestDelete(t *testing.T) {
 	mockUser := TestUser(t)
 
 	t.Run("success", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(mockUser, nil).Once()
-		mockUserRepo.On("Delete", mock.Anything, mock.AnythingOfType("int64")).Return(nil).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
+		mockUserRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Delete(context.TODO(), mockUser.ID)
@@ -149,21 +155,21 @@ func TestDelete(t *testing.T) {
 	})
 
 	t.Run("error-not-found", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(TestUserEmpty(t), domain.NewErrNotFound("user")).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), errors.NewErrNotFound("user")).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Delete(context.TODO(), mockUser.ID)
 
 		assert := assert.New(t)
 		assert.Error(err)
-		assert.Equal(err, domain.NewErrNotFound("user"))
+		assert.Equal(err, errors.NewErrNotFound("user"))
 
 		mockUserRepo.AssertExpectations(t)
 	})
 
 	t.Run("error-happens-in-db", func(t *testing.T) {
-		errRepository := domain.NewErrRepository(errors.New("Unexpected error"))
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(TestUserEmpty(t), errRepository).Once()
+		errRepository := errors.NewErrRepository(errors.New("Unexpected error"))
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(TestUserEmpty(t), errRepository).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Delete(context.TODO(), mockUser.ID)
@@ -183,7 +189,7 @@ func TestFind(t *testing.T) {
 	mockUser := TestUser(t)
 
 	t.Run("success", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(mockUser, nil).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		user, err := userUse.Find(context.TODO(), mockUser.ID)
 
@@ -194,7 +200,7 @@ func TestFind(t *testing.T) {
 	})
 
 	t.Run("error-failed", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("int64")).Return(&domain.User{}, errors.New("Unexpected error")).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(&domain.User{}, errors.New("Unexpected error")).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		user, err := userUse.Find(context.TODO(), mockUser.ID)
@@ -234,7 +240,7 @@ func TestFindAll(t *testing.T) {
 	})
 
 	t.Run("error-happens-in-db", func(t *testing.T) {
-		errRepository := domain.NewErrRepository(errors.New("Unexpected error"))
+		errRepository := errors.NewErrRepository(errors.New("Unexpected error"))
 
 		mockUserRepo.On("FindAll",
 			mock.Anything,

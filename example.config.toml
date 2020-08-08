@@ -7,15 +7,16 @@
 
 [database]
     host         = "127.0.0.1"
-    port         = "5433"
-    user         = "medhub"
-    dbname       = "clean_architecture"
-    password     = "1111"
+    port         = "5432"
+    user         = "user"
+    dbname       = "dbname"
+    password     = ""
     sslmode      = "disable"
 
 [context]
     timeout = 3000000000
 
 [jwt]
-    secret = "rDiHRMSRI_Ackzdg"
-    ttl    = "10080"
+    secret      = "secret"
+    access_ttl  = "1h"
+    refresh_ttl = "24h"

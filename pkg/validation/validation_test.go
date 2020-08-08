@@ -18,7 +18,7 @@ func TestValidator(t *testing.T)  {
 		err := Validator(data)
 		assert.Error(t, err)
 
-		errValidation := err.(*domain.ErrValidation)
+		errValidation := err.(*errors.ErrValidation)
 		assert.NotEmpty(t, errValidation.Errors["email"])
 	})
 }

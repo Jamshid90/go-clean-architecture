@@ -6,7 +6,7 @@ import (
 	"github.com/go-playground/locales/en"
 	"github.com/go-playground/validator/v10"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	apperrors "github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	field_tag "github.com/go-playground/validator/v10/translations/en"
 )
 
@@ -25,7 +25,7 @@ func Validator(s interface{}) error  {
 	err := validate.Struct(s)
 
 	if  err != nil {
-		errValidation     := domain.NewErrValidation()
+		errValidation     := apperrors.NewErrValidation()
 		errValidation.Err  = err
 		for _, fieldError := range  err.(validator.ValidationErrors) {
 			field_tag := fieldError.Field()

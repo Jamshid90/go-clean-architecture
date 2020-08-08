@@ -15,11 +15,11 @@ type UserRepository struct {
 }
 
 // Delete provides a mock function with given fields: ctx, id
-func (_m *UserRepository) Delete(ctx context.Context, id int64) error {
+func (_m *UserRepository) Delete(ctx context.Context, id string) error {
 	ret := _m.Called(ctx, id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, int64) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
 		r0 = rf(ctx, id)
 	} else {
 		r0 = ret.Error(0)
@@ -29,11 +29,11 @@ func (_m *UserRepository) Delete(ctx context.Context, id int64) error {
 }
 
 // Find provides a mock function with given fields: ctx, id
-func (_m *UserRepository) Find(ctx context.Context, id int64) (*domain.User, error) {
+func (_m *UserRepository) Find(ctx context.Context, id string) (*domain.User, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *domain.User
-	if rf, ok := ret.Get(0).(func(context.Context, int64) *domain.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -42,7 +42,7 @@ func (_m *UserRepository) Find(ctx context.Context, id int64) (*domain.User, err
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, int64) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = rf(ctx, id)
 	} else {
 		r1 = ret.Error(1)
