@@ -23,11 +23,11 @@ type Config struct {
 		Sslmode  string `toml:"sslmode"`
 	} `toml:"database"`
 	Context struct {
-		Timeout     time.Duration `toml:"timeout"`
+		Timeout time.Duration `toml:"timeout"`
 	} `toml:"context"`
 	Jwt struct {
-		Secret string `toml:"secret"`
-		AccessTTL string `toml:"access_ttl"`
+		Secret     string `toml:"secret"`
+		AccessTTL  string `toml:"access_ttl"`
 		RefreshTTL string `toml:"refresh_ttl"`
 	} `toml:"jwt"`
 }
@@ -41,7 +41,7 @@ func NewConfig(filePath string) (*Config, error) {
 	return config, nil
 }
 
-func (c *Config) GetPsqlConnStr() string  {
+func (c *Config) GetPsqlConnStr() string {
 
 	var conn []string
 

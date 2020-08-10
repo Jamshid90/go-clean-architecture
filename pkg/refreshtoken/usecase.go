@@ -1,21 +1,22 @@
 package refreshtoken
 
 import (
-	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
-	"time"
 	"context"
 	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
+	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
+	"time"
 )
 
 type refreshTokenUsecase struct {
 	refreshTokenRepo entity.RefreshTokenRepository
-	contextTimeout time.Duration
+	contextTimeout   time.Duration
 }
+
 // New refresh token usecase
-func NewRefreshTokenUsecase(repo entity.RefreshTokenRepository, timeout time.Duration) refreshTokenUsecase  {
+func NewRefreshTokenUsecase(repo entity.RefreshTokenRepository, timeout time.Duration) refreshTokenUsecase {
 	return refreshTokenUsecase{
 		refreshTokenRepo: repo,
-		contextTimeout: timeout,
+		contextTimeout:   timeout,
 	}
 }
 

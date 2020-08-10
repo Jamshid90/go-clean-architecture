@@ -8,14 +8,14 @@ import (
 )
 
 type Server struct {
-	config *config.Config
+	config  *config.Config
 	handler http.Handler
 }
 
 func NewServer(config *config.Config, handler http.Handler) *Server {
 	return &Server{
-		config :config,
-		handler :handler,
+		config:  config,
+		handler: handler,
 	}
 }
 
@@ -39,7 +39,7 @@ func (s *Server) tlsConfig() *tls.Config {
 	}
 }
 
-func (s *Server) Run() error  {
+func (s *Server) Run() error {
 
 	server := &http.Server{
 		Addr:         s.GetServerAddr(),
@@ -54,5 +54,5 @@ func (s *Server) Run() error  {
 		return server.ListenAndServeTLS(s.config.Server.SSLCert, s.config.Server.SSLPrivKey)
 	}
 
-	return  server.ListenAndServe()
+	return server.ListenAndServe()
 }

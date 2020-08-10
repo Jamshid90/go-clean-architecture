@@ -13,15 +13,15 @@ import (
 )
 
 type UserHandler struct {
-	logger *zap.Logger
+	logger      *zap.Logger
 	userUsecase entity.UserUsecase
 }
 
 // New user handler
-func NewUserHandler(r chi.Router, userUsecase entity.UserUsecase, logger *zap.Logger)  {
+func NewUserHandler(r chi.Router, userUsecase entity.UserUsecase, logger *zap.Logger) {
 	handler := UserHandler{
 		userUsecase: userUsecase,
-		logger: logger,
+		logger:      logger,
 	}
 	r.Get("/user", handler.findAll())
 	r.Get("/user/{id}", handler.find())
@@ -31,23 +31,23 @@ func NewUserHandler(r chi.Router, userUsecase entity.UserUsecase, logger *zap.Lo
 }
 
 // convert entity user to user model
-func (uh *UserHandler) convert(user *entity.User) *User  {
+func (uh *UserHandler) convert(user *entity.User) *User {
 	return &User{
-		ID        : user.ID,
-		Status    : user.Status,
-		Email     : user.Email,
-		FirstName : user.FirstName,
-		LastName  : user.LastName,
-		Password  : user.Password,
-		CreatedAt : user.CreatedAt,
-		UpdatedAt : user.UpdatedAt,
+		ID:        user.ID,
+		Status:    user.Status,
+		Email:     user.Email,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Password:  user.Password,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 }
 
 // convert items
-func (uh *UserHandler) convertItems(items []*entity.User) []*User  {
+func (uh *UserHandler) convertItems(items []*entity.User) []*User {
 	var users []*User
-	for _, item := range items  {
+	for _, item := range items {
 		users = append(users, uh.convert(item))
 	}
 	return users
@@ -74,16 +74,16 @@ func (uh *UserHandler) store() http.HandlerFunc {
 			return
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		user := entity.User{
-			Status    : userRequest.Status,
-			Email     : userRequest.Email,
-			Phone     : userRequest.Phone,
-			Gender    : userRequest.Gender,
-			FirstName : userRequest.FirstName,
-			LastName  : userRequest.LastName,
-			Password  : userRequest.Password,
-			BirthDate : birthDate,
+			Status:    userRequest.Status,
+			Email:     userRequest.Email,
+			Phone:     userRequest.Phone,
+			Gender:    userRequest.Gender,
+			FirstName: userRequest.FirstName,
+			LastName:  userRequest.LastName,
+			Password:  userRequest.Password,
+			BirthDate: birthDate,
 		}
 		if err := uh.userUsecase.Store(ctx, &user); err != nil {
 			uh.logger.Error("user store", zap.Error(err))
@@ -92,14 +92,14 @@ func (uh *UserHandler) store() http.HandlerFunc {
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"data" : uh.convert(&user).Sanitize(),
+			"status": "success",
+			"data":   uh.convert(&user).Sanitize(),
 		})
 	}
 }
 
 // update
-func (uh *UserHandler) update() http.HandlerFunc  {
+func (uh *UserHandler) update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var userRequest UpdateUserRequest
@@ -120,16 +120,16 @@ func (uh *UserHandler) update() http.HandlerFunc  {
 			return
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		user := entity.User{
-			ID        : userRequest.ID,
-			Status    : userRequest.Status,
-			Email     : userRequest.Email,
-			Phone     : userRequest.Phone,
-			Gender    : userRequest.Gender,
-			FirstName : userRequest.FirstName,
-			LastName  : userRequest.LastName,
-			BirthDate : birthDate,
+			ID:        userRequest.ID,
+			Status:    userRequest.Status,
+			Email:     userRequest.Email,
+			Phone:     userRequest.Phone,
+			Gender:    userRequest.Gender,
+			FirstName: userRequest.FirstName,
+			LastName:  userRequest.LastName,
+			BirthDate: birthDate,
 		}
 
 		if err := uh.userUsecase.Update(ctx, &user); err != nil {
@@ -139,16 +139,16 @@ func (uh *UserHandler) update() http.HandlerFunc  {
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"user" : uh.convert(&user),
+			"status": "success",
+			"user":   uh.convert(&user),
 		})
 	}
 }
 
 // delete
-func (uh *UserHandler) delete() http.HandlerFunc  {
+func (uh *UserHandler) delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx  := r.Context()
+		ctx := r.Context()
 		if err := uh.userUsecase.Delete(ctx, chi.URLParam(r, "id")); err != nil {
 			uh.logger.Error("user delete", zap.Error(err))
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
@@ -156,31 +156,31 @@ func (uh *UserHandler) delete() http.HandlerFunc  {
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
+			"status": "success",
 		})
 	}
 }
 
 // find
-func (uh *UserHandler) find() http.HandlerFunc  {
+func (uh *UserHandler) find() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ctx  := r.Context()
+		ctx := r.Context()
 		user, err := uh.userUsecase.Find(ctx, chi.URLParam(r, "id"))
-		if  err != nil {
+		if err != nil {
 			uh.logger.Error("user find", zap.Error(err))
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"data" : uh.convert(user).Sanitize(),
+			"status": "success",
+			"data":   uh.convert(user).Sanitize(),
 		})
 	}
 }
 
 // find all
-func (uh *UserHandler) findAll() http.HandlerFunc  {
+func (uh *UserHandler) findAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			limit  = 10
@@ -202,17 +202,17 @@ func (uh *UserHandler) findAll() http.HandlerFunc  {
 			params[i] = v
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		items, err := uh.userUsecase.FindAll(ctx, limit, offset, params)
-		if  err != nil {
+		if err != nil {
 			uh.logger.Error("user find all", zap.Error(err))
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
 			return
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"items" : uh.convertItems(items),
+			"status": "success",
+			"items":  uh.convertItems(items),
 		})
 	}
 }

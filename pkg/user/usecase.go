@@ -10,13 +10,14 @@ import (
 )
 
 type userUsecase struct {
-	userRepo entity.UserRepository
+	userRepo       entity.UserRepository
 	contextTimeout time.Duration
 }
+
 // new user usecase
-func NewUserUsecase(repo entity.UserRepository, timeout time.Duration) userUsecase  {
+func NewUserUsecase(repo entity.UserRepository, timeout time.Duration) userUsecase {
 	return userUsecase{
-		userRepo: repo,
+		userRepo:       repo,
 		contextTimeout: timeout,
 	}
 }
@@ -90,7 +91,7 @@ func (u *userUsecase) Update(ctx context.Context, m *entity.User) error {
 	}
 
 	if userByEmail, _ := u.userRepo.FindByEmail(ctx, m.Email); userByEmail != nil && userByEmail.ID != user.ID {
-		return  errors.NewErrConflict("email")
+		return errors.NewErrConflict("email")
 	}
 	m.CreatedAt = user.CreatedAt
 	m.UpdatedAt = time.Now().UTC()

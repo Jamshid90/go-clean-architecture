@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestSanitize(t *testing.T)  {
+func TestSanitize(t *testing.T) {
 	user := User{
-		Password:"123456789",
+		Password: "123456789",
 	}
 	assert.Empty(t, user.Sanitize().Password)
 }

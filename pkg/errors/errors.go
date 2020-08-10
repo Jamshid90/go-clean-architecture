@@ -7,11 +7,11 @@ import (
 )
 
 var (
-	ErrUnauthorized        = errors.New(GetHTTPStatusText(http.StatusUnauthorized))
-	ErrUnprocessableEntity = errors.New(GetHTTPStatusText(http.StatusUnprocessableEntity))
-	ErrInternalServerError = errors.New(GetHTTPStatusText(http.StatusInternalServerError))
-	BadRequest             = errors.New(GetHTTPStatusText(http.StatusBadRequest))
-	ErrBadParamInput       = errors.New("Given param is not valid")
+	ErrUnauthorized           = errors.New(GetHTTPStatusText(http.StatusUnauthorized))
+	ErrUnprocessableEntity    = errors.New(GetHTTPStatusText(http.StatusUnprocessableEntity))
+	ErrInternalServerError    = errors.New(GetHTTPStatusText(http.StatusInternalServerError))
+	BadRequest                = errors.New(GetHTTPStatusText(http.StatusBadRequest))
+	ErrBadParamInput          = errors.New("Given param is not valid")
 	ErrInvalidEmailOrPassword = errors.New("invalid email or password")
 )
 
@@ -48,14 +48,14 @@ func (e *ErrConflict) Error() string {
 
 // Error Repository
 func NewErrRepository(err error) error {
-	return &ErrRepository{Err:err}
+	return &ErrRepository{Err: err}
 }
 
 type ErrRepository struct {
 	Err error
 }
 
-func (e ErrRepository) Error() string  {
+func (e ErrRepository) Error() string {
 	return e.Err.Error()
 }
 
@@ -79,6 +79,6 @@ type ErrBadRequest struct {
 	Message string
 }
 
-func (e ErrBadRequest) Error() string  {
+func (e ErrBadRequest) Error() string {
 	return e.Message
 }

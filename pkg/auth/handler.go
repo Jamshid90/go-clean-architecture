@@ -5,9 +5,9 @@ import (
 	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/Jamshid90/go-clean-architecture/pkg/hash"
+	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/middleware"
 	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/request"
 	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/response"
-	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/middleware"
 	"github.com/Jamshid90/go-clean-architecture/pkg/token"
 	"github.com/Jamshid90/go-clean-architecture/pkg/validation"
 	"github.com/go-chi/chi"
@@ -17,18 +17,18 @@ import (
 )
 
 type AuthHandler struct {
-	logger *zap.Logger
-	config *config.Config
-	userUsecase entity.UserUsecase
+	logger              *zap.Logger
+	config              *config.Config
+	userUsecase         entity.UserUsecase
 	refreshTokenUsecase entity.RefreshTokenUsecase
 }
 
 // New user handler
-func NewAuthHandler(r chi.Router, userUsecase entity.UserUsecase, refreshTokenUsecase entity.RefreshTokenUsecase, config *config.Config, logger *zap.Logger)  {
+func NewAuthHandler(r chi.Router, userUsecase entity.UserUsecase, refreshTokenUsecase entity.RefreshTokenUsecase, config *config.Config, logger *zap.Logger) {
 	handler := AuthHandler{
-		logger: logger,
-		config: config,
-		userUsecase: userUsecase,
+		logger:              logger,
+		config:              config,
+		userUsecase:         userUsecase,
 		refreshTokenUsecase: refreshTokenUsecase,
 	}
 
@@ -58,7 +58,7 @@ func (a *AuthHandler) login() http.HandlerFunc {
 			return
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		// find user by email
 		user, err := a.userUsecase.FindByEmail(ctx, loginRequest.Email)
 		if err != nil {
@@ -84,7 +84,7 @@ func (a *AuthHandler) login() http.HandlerFunc {
 		// create refresh token
 		if err = a.refreshTokenUsecase.Store(ctx, &entity.RefreshToken{
 			UserID: user.ID,
-			Token: refresh_token,
+			Token:  refresh_token,
 		}); err != nil {
 			a.logger.Error("auth login refresh token store", zap.Error(err))
 			response.Error(w, r, errors.ErrInternalServerError, response.GetStatusCodeErr(err))
@@ -92,24 +92,24 @@ func (a *AuthHandler) login() http.HandlerFunc {
 		}
 
 		userInfo := User{
-			ID: user.ID,
-			Email: user.Email,
-			Phone: user.Phone,
-			Gender: user.Gender,
+			ID:        user.ID,
+			Email:     user.Email,
+			Phone:     user.Phone,
+			Gender:    user.Gender,
 			FirstName: user.FirstName,
-			LastName: user.LastName,
+			LastName:  user.LastName,
 			BirthDate: user.BirthDate,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"data" : userInfo,
-			"token" : map[string]string{
-				"type" : "Bearer",
-				"access" : access_token,
-				"refresh" : refresh_token,
+			"status": "success",
+			"data":   userInfo,
+			"token": map[string]string{
+				"type":    "Bearer",
+				"access":  access_token,
+				"refresh": refresh_token,
 			},
 		})
 	}
@@ -137,16 +137,16 @@ func (a *AuthHandler) signup() http.HandlerFunc {
 			return
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		user := entity.User{
-			Status    : entity.USER_STATUS_ACTIVE,
-			Email     : signupRequest.Email,
-			Phone     : signupRequest.Phone,
-			Gender    : signupRequest.Gender,
-			BirthDate : birthDate,
-			FirstName : signupRequest.FirstName,
-			LastName  : signupRequest.LastName,
-			Password  : signupRequest.Password,
+			Status:    entity.USER_STATUS_ACTIVE,
+			Email:     signupRequest.Email,
+			Phone:     signupRequest.Phone,
+			Gender:    signupRequest.Gender,
+			BirthDate: birthDate,
+			FirstName: signupRequest.FirstName,
+			LastName:  signupRequest.LastName,
+			Password:  signupRequest.Password,
 		}
 
 		if err := a.userUsecase.Store(ctx, &user); err != nil {
@@ -156,20 +156,20 @@ func (a *AuthHandler) signup() http.HandlerFunc {
 		}
 
 		userInfo := User{
-			ID: user.ID,
-			Email: user.Email,
-			Phone: user.Phone,
-			Gender: user.Gender,
+			ID:        user.ID,
+			Email:     user.Email,
+			Phone:     user.Phone,
+			Gender:    user.Gender,
 			BirthDate: user.BirthDate,
 			FirstName: user.FirstName,
-			LastName: user.LastName,
+			LastName:  user.LastName,
 			CreatedAt: user.CreatedAt,
 			UpdatedAt: user.UpdatedAt,
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"data" : userInfo,
+			"status": "success",
+			"data":   userInfo,
 		})
 	}
 }
@@ -183,7 +183,7 @@ func (a *AuthHandler) logout() http.HandlerFunc {
 			return
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		if err := a.refreshTokenUsecase.DeleteByUserId(ctx, user.ID); err != nil {
 			a.logger.Error("auth logout delete refresh token", zap.Error(err))
 			response.Error(w, r, err, response.GetStatusCodeErr(err))
@@ -191,7 +191,7 @@ func (a *AuthHandler) logout() http.HandlerFunc {
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
+			"status": "success",
 		})
 	}
 }
@@ -212,7 +212,7 @@ func (a *AuthHandler) refreshToken() http.HandlerFunc {
 			return
 		}
 
-		ctx  := r.Context()
+		ctx := r.Context()
 		refreshToken, err := a.refreshTokenUsecase.Find(ctx, refreshTokenRequest.Token)
 		if err != nil {
 			a.logger.Error("auth refresh token find", zap.Error(err))
@@ -241,7 +241,7 @@ func (a *AuthHandler) refreshToken() http.HandlerFunc {
 		// create refresh token
 		if err = a.refreshTokenUsecase.Store(ctx, &entity.RefreshToken{
 			UserID: refreshToken.UserID,
-			Token: refresh_token,
+			Token:  refresh_token,
 		}); err != nil {
 			a.logger.Error("auth refresh token store", zap.Error(err))
 			response.Error(w, r, errors.ErrInternalServerError, response.GetStatusCodeErr(err))
@@ -255,11 +255,11 @@ func (a *AuthHandler) refreshToken() http.HandlerFunc {
 		}
 
 		response.Json(w, r, 200, map[string]interface{}{
-			"status" : "success",
-			"token" : map[string]string{
-				"type" : "Bearer",
-				"access" : access_token,
-				"refresh" : refresh_token,
+			"status": "success",
+			"token": map[string]string{
+				"type":    "Bearer",
+				"access":  access_token,
+				"refresh": refresh_token,
 			},
 		})
 	}

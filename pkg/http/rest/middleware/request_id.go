@@ -10,13 +10,13 @@ import (
 type ctxKeyRequestID int
 
 const (
-	RequestIDKey ctxKeyRequestID = 0
-	RequestIDHeader = "X-Request-Id"
+	RequestIDKey    ctxKeyRequestID = 0
+	RequestIDHeader                 = "X-Request-Id"
 )
 
 var (
 	prefix string
-	reqid uint64
+	reqid  uint64
 )
 
 func RequestID(next http.Handler) http.Handler {

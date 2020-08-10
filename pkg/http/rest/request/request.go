@@ -1,12 +1,12 @@
 package request
 
 import (
-	"fmt"
-	"io"
-	"errors"
-	"net/http"
 	"encoding/json"
+	"errors"
+	"fmt"
 	apperrors "github.com/Jamshid90/go-clean-architecture/pkg/errors"
+	"io"
+	"net/http"
 )
 
 var (

@@ -17,12 +17,10 @@ func TestValidationData(t *testing.T) *TestUserData {
 	t.Helper()
 	return &TestUserData{
 		Status:          "active",
-		Email:          "user@info.com",
-		FirstName:      "User",
-		LastName:       "Admin",
-		Password:       "123456789",
+		Email:           "user@info.com",
+		FirstName:       "User",
+		LastName:        "Admin",
+		Password:        "123456789",
 		ConfirmPassword: "123456789",
 	}
 }
-
-

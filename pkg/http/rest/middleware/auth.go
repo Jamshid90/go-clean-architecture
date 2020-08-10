@@ -16,7 +16,7 @@ func Auth(jwtsecret string) func(next http.Handler) http.Handler {
 				response.Error(w, r, errors.ErrUnauthorized, http.StatusUnauthorized)
 				return
 			}
-			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", user )))
+			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), "user", user)))
 		})
 	}
 }

@@ -7,7 +7,7 @@ type ResponseWriter struct {
 	code int
 }
 
-func NewResponseWriter(w http.ResponseWriter, statusCode int) *ResponseWriter  {
+func NewResponseWriter(w http.ResponseWriter, statusCode int) *ResponseWriter {
 	return &ResponseWriter{w, statusCode}
 }
 

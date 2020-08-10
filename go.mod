@@ -12,6 +12,7 @@ require (
 	github.com/golang-migrate/migrate v3.5.4+incompatible // indirect
 	github.com/golang-migrate/migrate/v4 v4.12.2 // indirect
 	github.com/jackc/pgx/v4 v4.8.1
+	github.com/stretchr/testify v1.5.1
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 )

@@ -74,7 +74,7 @@ func ParseJwtToken(tokenStr, jwtsecret string) (map[string]interface{}, error) {
 	return claims, err
 }
 
-func GetAuthUser(jwtsecret string, r *http.Request) (*entity.User, error)  {
+func GetAuthUser(jwtsecret string, r *http.Request) (*entity.User, error) {
 	var user entity.User
 	token := r.Header.Get("Authorization")
 	if len(token) > 10 {

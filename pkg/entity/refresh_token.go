@@ -6,9 +6,9 @@ import (
 )
 
 type RefreshToken struct {
-	UserID      string
-	Token       string
-	CreatedAt   time.Time
+	UserID    string
+	Token     string
+	CreatedAt time.Time
 }
 
 type RefreshTokenUsecase interface {

@@ -18,10 +18,10 @@ var (
 )
 
 type ResponseJSON struct {
-	Status     string                 `json:"status"`
-	Error      string                 `json:"error,omitempty"`
-	Errors     map[string]interface{} `json:"errors,omitempty"`
-	Data       interface{}            `json:"data,omitempty"`
+	Status string                 `json:"status"`
+	Error  string                 `json:"error,omitempty"`
+	Errors map[string]interface{} `json:"errors,omitempty"`
+	Data   interface{}            `json:"data,omitempty"`
 }
 
 func GetStatusCodeErr(err error) int {
@@ -63,7 +63,7 @@ func GetStatusCodeErr(err error) int {
 	return 0
 }
 
-func Json(w http.ResponseWriter, r *http.Request, status int, data interface{})  {
+func Json(w http.ResponseWriter, r *http.Request, status int, data interface{}) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
 }
@@ -71,17 +71,17 @@ func Json(w http.ResponseWriter, r *http.Request, status int, data interface{}) 
 func Error(w http.ResponseWriter, r *http.Request, err error, status int) {
 	w.WriteHeader(status)
 	response := ResponseJSON{
-		Status:"error",
-		Error: err.Error(),
+		Status: "error",
+		Error:  err.Error(),
 	}
 
 	switch {
-		case errors.As(err, &errValidation):
-			response = ResponseJSON{
-				Status:"errors",
-				Error:  errValidation.Error(),
-				Errors: errValidation.Errors,
-			}
+	case errors.As(err, &errValidation):
+		response = ResponseJSON{
+			Status: "errors",
+			Error:  errValidation.Error(),
+			Errors: errValidation.Errors,
+		}
 	}
 
 	json.NewEncoder(w).Encode(response)

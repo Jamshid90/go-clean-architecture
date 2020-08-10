@@ -1,11 +1,11 @@
 package user
 
 import (
-	"fmt"
 	"context"
+	"fmt"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/jackc/pgx/v4"
-	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -18,7 +18,7 @@ func NewPgxUserRepository(dbpool *pgxpool.Pool) entity.UserRepository {
 }
 
 func (p *pgxUserRepository) Store(ctx context.Context, m *entity.User) error {
-	_, err := p.db.Exec(ctx,`INSERT INTO "user"(
+	_, err := p.db.Exec(ctx, `INSERT INTO "user"(
 		id, status, email, phone, gender, first_name, last_name, password, birth_date, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
 		m.ID,
@@ -35,14 +35,14 @@ func (p *pgxUserRepository) Store(ctx context.Context, m *entity.User) error {
 	)
 
 	if err != nil {
-		return errors.ErrRepository{Err:fmt.Errorf("error during store to user repository: %w", err)}
+		return errors.ErrRepository{Err: fmt.Errorf("error during store to user repository: %w", err)}
 	}
 
 	return nil
 }
 
 func (p *pgxUserRepository) Update(ctx context.Context, m *entity.User) error {
-	_, err := p.db.Exec(ctx,`UPDATE "user" 
+	_, err := p.db.Exec(ctx, `UPDATE "user" 
 	    SET status=$1, email=$2, phone=$3, gender=$4, first_name=$5, last_name=$6, birth_date=$7 updated_at=$8
 	    WHERE id=$6`,
 		m.Status,
@@ -57,22 +57,22 @@ func (p *pgxUserRepository) Update(ctx context.Context, m *entity.User) error {
 	)
 
 	if err != nil {
-		return errors.ErrRepository{Err:fmt.Errorf("error during store to user repository: %w", err)}
+		return errors.ErrRepository{Err: fmt.Errorf("error during store to user repository: %w", err)}
 	}
 
 	return nil
 }
 
 func (p *pgxUserRepository) Delete(ctx context.Context, id string) error {
-	if _, err := p.db.Exec(ctx,`DELETE FROM "user" WHERE id=$1`, id); err != nil {
-		return errors.ErrRepository{Err:fmt.Errorf("error during delete to user repository: %w", err)}
+	if _, err := p.db.Exec(ctx, `DELETE FROM "user" WHERE id=$1`, id); err != nil {
+		return errors.ErrRepository{Err: fmt.Errorf("error during delete to user repository: %w", err)}
 	}
 	return nil
 }
 
 func (p *pgxUserRepository) Find(ctx context.Context, id string) (*entity.User, error) {
 	user := entity.User{}
-	row := p.db.QueryRow(ctx,`SELECT id, status, email, phone, gender, first_name, last_name, password, birth_date, created_at, updated_at 
+	row := p.db.QueryRow(ctx, `SELECT id, status, email, phone, gender, first_name, last_name, password, birth_date, created_at, updated_at 
                                    FROM "user" 
                                    WHERE id=$1`, id)
 
@@ -95,7 +95,7 @@ func (p *pgxUserRepository) Find(ctx context.Context, id string) (*entity.User, 
 	}
 
 	if err != nil {
-		return nil, errors.ErrRepository{Err:fmt.Errorf("error during find to user repository: %w", err)}
+		return nil, errors.ErrRepository{Err: fmt.Errorf("error during find to user repository: %w", err)}
 	}
 
 	return &user, nil
@@ -108,7 +108,7 @@ func (p *pgxUserRepository) FindAll(ctx context.Context, limit, offset int, para
  								       LIMIT $1 
 									   OFFSET $2`, limit, offset)
 	if err != nil {
-		return items, errors.ErrRepository{Err:fmt.Errorf("error during find all to user repository: %w", err)}
+		return items, errors.ErrRepository{Err: fmt.Errorf("error during find all to user repository: %w", err)}
 	}
 	for rows.Next() {
 		user := entity.User{}
@@ -126,7 +126,7 @@ func (p *pgxUserRepository) FindAll(ctx context.Context, limit, offset int, para
 			&user.UpdatedAt,
 		)
 		if err != nil {
-			return items, errors.ErrRepository{Err:fmt.Errorf("error during find all to user repository: %w", err)}
+			return items, errors.ErrRepository{Err: fmt.Errorf("error during find all to user repository: %w", err)}
 		}
 		items = append(items, &user)
 	}
@@ -157,7 +157,7 @@ func (p *pgxUserRepository) FindByEmail(ctx context.Context, email string) (*ent
 	}
 
 	if err != nil {
-		return nil, errors.ErrRepository{Err:fmt.Errorf("error during find by email to user repository: %w", err)}
+		return nil, errors.ErrRepository{Err: fmt.Errorf("error during find by email to user repository: %w", err)}
 	}
 
 	return &user, nil
