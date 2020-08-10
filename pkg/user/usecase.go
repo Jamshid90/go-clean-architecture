@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/Jamshid90/go-clean-architecture/pkg/hash"
 	"github.com/Jamshid90/go-clean-architecture/pkg/rand"
@@ -10,11 +10,11 @@ import (
 )
 
 type userUsecase struct {
-	userRepo domain.UserRepository
+	userRepo entity.UserRepository
 	contextTimeout time.Duration
 }
 // new user usecase
-func NewUserUsecase(repo domain.UserRepository, timeout time.Duration) userUsecase  {
+func NewUserUsecase(repo entity.UserRepository, timeout time.Duration) userUsecase  {
 	return userUsecase{
 		userRepo: repo,
 		contextTimeout: timeout,
@@ -38,7 +38,7 @@ func (u *userUsecase) NewID(ctx context.Context) (string, error) {
 }
 
 // before store
-func (u *userUsecase) BeforeStore(ctx context.Context, m *domain.User) error {
+func (u *userUsecase) BeforeStore(ctx context.Context, m *entity.User) error {
 
 	m.CreatedAt = time.Now().UTC()
 	m.UpdatedAt = m.CreatedAt
@@ -58,7 +58,7 @@ func (u *userUsecase) BeforeStore(ctx context.Context, m *domain.User) error {
 }
 
 // store
-func (u *userUsecase) Store(ctx context.Context, m *domain.User) error {
+func (u *userUsecase) Store(ctx context.Context, m *entity.User) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -80,7 +80,7 @@ func (u *userUsecase) Store(ctx context.Context, m *domain.User) error {
 }
 
 // update
-func (u *userUsecase) Update(ctx context.Context, m *domain.User) error {
+func (u *userUsecase) Update(ctx context.Context, m *entity.User) error {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -107,7 +107,7 @@ func (u *userUsecase) Delete(ctx context.Context, id string) error {
 		return err
 	}
 
-	if *existedUser == (domain.User{}) {
+	if *existedUser == (entity.User{}) {
 		return errors.NewErrNotFound("user")
 	}
 
@@ -115,7 +115,7 @@ func (u *userUsecase) Delete(ctx context.Context, id string) error {
 }
 
 // find
-func (u *userUsecase) Find(ctx context.Context, id string) (*domain.User, error) {
+func (u *userUsecase) Find(ctx context.Context, id string) (*entity.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -123,7 +123,7 @@ func (u *userUsecase) Find(ctx context.Context, id string) (*domain.User, error)
 }
 
 // find all
-func (u *userUsecase) FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*domain.User, error) {
+func (u *userUsecase) FindAll(ctx context.Context, limit, offset int, params map[string]interface{}) ([]*entity.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 
@@ -131,7 +131,7 @@ func (u *userUsecase) FindAll(ctx context.Context, limit, offset int, params map
 }
 
 // find by email
-func (u *userUsecase) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (u *userUsecase) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
 	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
 	defer cancel()
 

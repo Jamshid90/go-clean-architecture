@@ -2,13 +2,13 @@ package user
 
 import (
 	"testing"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"time"
 )
 
-func TestUser(t *testing.T) *domain.User {
+func TestUser(t *testing.T) *entity.User {
 	t.Helper()
-	return &domain.User{
+	return &entity.User{
 		ID : "123456789",
 		Email :"user@inifo.com",
 		Phone :"000000000000",
@@ -19,9 +19,9 @@ func TestUser(t *testing.T) *domain.User {
 	}
 }
 
-func TestUserEmpty(t *testing.T) *domain.User {
+func TestUserEmpty(t *testing.T) *entity.User {
 	t.Helper()
-	return &domain.User{}
+	return &entity.User{}
 }
 
 

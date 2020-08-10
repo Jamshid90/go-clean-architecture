@@ -2,7 +2,7 @@ package token
 
 import (
 	"fmt"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"time"
@@ -74,8 +74,8 @@ func ParseJwtToken(tokenStr, jwtsecret string) (map[string]interface{}, error) {
 	return claims, err
 }
 
-func GetAuthUser(jwtsecret string, r *http.Request) (*domain.User, error)  {
-	var user domain.User
+func GetAuthUser(jwtsecret string, r *http.Request) (*entity.User, error)  {
+	var user entity.User
 	token := r.Header.Get("Authorization")
 	if len(token) > 10 {
 		token = token[7:]

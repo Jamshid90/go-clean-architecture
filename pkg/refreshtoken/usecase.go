@@ -4,15 +4,15 @@ import (
 	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"time"
 	"context"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 )
 
 type refreshTokenUsecase struct {
-	refreshTokenRepo domain.RefreshTokenRepository
+	refreshTokenRepo entity.RefreshTokenRepository
 	contextTimeout time.Duration
 }
 // New refresh token usecase
-func NewRefreshTokenUsecase(repo domain.RefreshTokenRepository, timeout time.Duration) refreshTokenUsecase  {
+func NewRefreshTokenUsecase(repo entity.RefreshTokenRepository, timeout time.Duration) refreshTokenUsecase  {
 	return refreshTokenUsecase{
 		refreshTokenRepo: repo,
 		contextTimeout: timeout,
@@ -20,13 +20,13 @@ func NewRefreshTokenUsecase(repo domain.RefreshTokenRepository, timeout time.Dur
 }
 
 // Before Store
-func (r *refreshTokenUsecase) BeforeStore(m *domain.RefreshToken) error {
+func (r *refreshTokenUsecase) BeforeStore(m *entity.RefreshToken) error {
 	m.CreatedAt = time.Now().UTC()
 	return nil
 }
 
 // Store
-func (r *refreshTokenUsecase) Store(ctx context.Context, m *domain.RefreshToken) error {
+func (r *refreshTokenUsecase) Store(ctx context.Context, m *entity.RefreshToken) error {
 	ctx, cancel := context.WithTimeout(ctx, r.contextTimeout)
 	defer cancel()
 
@@ -47,7 +47,7 @@ func (r *refreshTokenUsecase) Delete(ctx context.Context, token string) error {
 		return err
 	}
 
-	if *existedToken == (domain.RefreshToken{}) {
+	if *existedToken == (entity.RefreshToken{}) {
 		return errors.NewErrNotFound("user")
 	}
 
@@ -63,7 +63,7 @@ func (r *refreshTokenUsecase) DeleteByUserId(ctx context.Context, id string) err
 }
 
 // Find
-func (r *refreshTokenUsecase) Find(ctx context.Context, token string) (*domain.RefreshToken, error) {
+func (r *refreshTokenUsecase) Find(ctx context.Context, token string) (*entity.RefreshToken, error) {
 	ctx, cancel := context.WithTimeout(ctx, r.contextTimeout)
 	defer cancel()
 

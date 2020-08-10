@@ -3,7 +3,7 @@ package validation
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 )
 
 func TestValidator(t *testing.T)  {

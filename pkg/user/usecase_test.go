@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 	"errors"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain/mocks"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
@@ -34,7 +34,7 @@ func TestStore(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
-		mockUserRepo.On("Store", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil).Once()
+		mockUserRepo.On("Store", mock.Anything, mock.AnythingOfType("*entity.User")).Return(nil).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Store(context.TODO(), mockUser)
@@ -61,7 +61,7 @@ func TestStore(t *testing.T) {
 		errRepository := errors.NewErrRepository(errors.New("Unexpected error"))
 		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
-		mockUserRepo.On("Store", mock.Anything, mock.AnythingOfType("*domain.User")).Return(errRepository).Once()
+		mockUserRepo.On("Store", mock.Anything, mock.AnythingOfType("*entity.User")).Return(errRepository).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Store(context.TODO(), mockUser)
@@ -81,7 +81,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
-		mockUserRepo.On("Update", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil).Once()
+		mockUserRepo.On("Update", mock.Anything, mock.AnythingOfType("*entity.User")).Return(nil).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Update(context.TODO(), mockUser)
@@ -124,7 +124,7 @@ func TestUpdate(t *testing.T) {
 
 		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
 		mockUserRepo.On("FindByEmail", mock.Anything, mock.AnythingOfType("string")).Return(mockUser, nil).Once()
-		mockUserRepo.On("Update", mock.Anything, mock.AnythingOfType("*domain.User")).Return(errRepository).Once()
+		mockUserRepo.On("Update", mock.Anything, mock.AnythingOfType("*entity.User")).Return(errRepository).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		err := userUse.Update(context.TODO(), mockUser)
@@ -200,13 +200,13 @@ func TestFind(t *testing.T) {
 	})
 
 	t.Run("error-failed", func(t *testing.T) {
-		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(&domain.User{}, errors.New("Unexpected error")).Once()
+		mockUserRepo.On("Find", mock.Anything, mock.AnythingOfType("string")).Return(&entity.User{}, errors.New("Unexpected error")).Once()
 
 		userUse := NewUserUsecase(mockUserRepo, time.Second*2)
 		user, err := userUse.Find(context.TODO(), mockUser.ID)
 
 		assert.Error(t, err)
-		assert.Equal(t, &domain.User{}, user)
+		assert.Equal(t, &entity.User{}, user)
 
 		mockUserRepo.AssertExpectations(t)
 	})
@@ -217,7 +217,7 @@ func TestFindAll(t *testing.T) {
 	mockUserRepo := new(mocks.UserRepository)
 	mockUser := TestUser(t)
 
-	mockListUser := make([]*domain.User, 0)
+	mockListUser := make([]*entity.User, 0)
 	mockListUser = append(mockListUser, mockUser)
 
 	t.Run("success", func(t *testing.T) {

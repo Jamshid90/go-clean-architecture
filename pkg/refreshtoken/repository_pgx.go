@@ -5,7 +5,7 @@ import (
 	"context"
 	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/jackc/pgx/v4"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
@@ -13,11 +13,11 @@ type pgxRefreshTokenRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewRefreshTokenRepositoryPgx(dbpool *pgxpool.Pool) domain.RefreshTokenRepository {
+func NewRefreshTokenRepositoryPgx(dbpool *pgxpool.Pool) entity.RefreshTokenRepository {
 	return &pgxRefreshTokenRepository{db: dbpool}
 }
 
-func (p *pgxRefreshTokenRepository) Store(ctx context.Context, m *domain.RefreshToken) error {
+func (p *pgxRefreshTokenRepository) Store(ctx context.Context, m *entity.RefreshToken) error {
 	_, err := p.db.Exec(ctx,`INSERT INTO "refresh_token"(
 		user_id, token, created_at)
 		VALUES ($1, $2, $3);`,
@@ -47,8 +47,8 @@ func (p *pgxRefreshTokenRepository) DeleteByUserId(ctx context.Context, id strin
 	return nil
 }
 
-func (p *pgxRefreshTokenRepository) Find(ctx context.Context, token string) (*domain.RefreshToken, error) {
-	refreshToken := domain.RefreshToken{}
+func (p *pgxRefreshTokenRepository) Find(ctx context.Context, token string) (*entity.RefreshToken, error) {
+	refreshToken := entity.RefreshToken{}
 	row := p.db.QueryRow(ctx,`SELECT user_id, token, created_at FROM "refresh_token" WHERE token=$1`, token)
 
 	err := row.Scan(

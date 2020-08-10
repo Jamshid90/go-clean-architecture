@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	domain "github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	entity "github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -29,15 +29,15 @@ func (_m *UserRepository) Delete(ctx context.Context, id string) error {
 }
 
 // Find provides a mock function with given fields: ctx, id
-func (_m *UserRepository) Find(ctx context.Context, id string) (*domain.User, error) {
+func (_m *UserRepository) Find(ctx context.Context, id string) (*entity.User, error) {
 	ret := _m.Called(ctx, id)
 
-	var r0 *domain.User
-	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
+	var r0 *entity.User
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.User); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.User)
+			r0 = ret.Get(0).(*entity.User)
 		}
 	}
 
@@ -52,15 +52,15 @@ func (_m *UserRepository) Find(ctx context.Context, id string) (*domain.User, er
 }
 
 // FindAll provides a mock function with given fields: ctx, limit, offset, params
-func (_m *UserRepository) FindAll(ctx context.Context, limit int, offset int, params map[string]interface{}) ([]*domain.User, error) {
+func (_m *UserRepository) FindAll(ctx context.Context, limit int, offset int, params map[string]interface{}) ([]*entity.User, error) {
 	ret := _m.Called(ctx, limit, offset, params)
 
-	var r0 []*domain.User
-	if rf, ok := ret.Get(0).(func(context.Context, int, int, map[string]interface{}) []*domain.User); ok {
+	var r0 []*entity.User
+	if rf, ok := ret.Get(0).(func(context.Context, int, int, map[string]interface{}) []*entity.User); ok {
 		r0 = rf(ctx, limit, offset, params)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.User)
+			r0 = ret.Get(0).([]*entity.User)
 		}
 	}
 
@@ -75,15 +75,15 @@ func (_m *UserRepository) FindAll(ctx context.Context, limit int, offset int, pa
 }
 
 // FindByEmail provides a mock function with given fields: ctx, email
-func (_m *UserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+func (_m *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
 	ret := _m.Called(ctx, email)
 
-	var r0 *domain.User
-	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.User); ok {
+	var r0 *entity.User
+	if rf, ok := ret.Get(0).(func(context.Context, string) *entity.User); ok {
 		r0 = rf(ctx, email)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.User)
+			r0 = ret.Get(0).(*entity.User)
 		}
 	}
 
@@ -98,11 +98,11 @@ func (_m *UserRepository) FindByEmail(ctx context.Context, email string) (*domai
 }
 
 // Store provides a mock function with given fields: ctx, user
-func (_m *UserRepository) Store(ctx context.Context, user *domain.User) error {
+func (_m *UserRepository) Store(ctx context.Context, user *entity.User) error {
 	ret := _m.Called(ctx, user)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.User) error); ok {
 		r0 = rf(ctx, user)
 	} else {
 		r0 = ret.Error(0)
@@ -112,11 +112,11 @@ func (_m *UserRepository) Store(ctx context.Context, user *domain.User) error {
 }
 
 // Update provides a mock function with given fields: ctx, user
-func (_m *UserRepository) Update(ctx context.Context, user *domain.User) error {
+func (_m *UserRepository) Update(ctx context.Context, user *entity.User) error {
 	ret := _m.Called(ctx, user)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *entity.User) error); ok {
 		r0 = rf(ctx, user)
 	} else {
 		r0 = ret.Error(0)

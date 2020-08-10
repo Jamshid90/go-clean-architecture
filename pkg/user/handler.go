@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/request"
 	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/response"
 	"github.com/Jamshid90/go-clean-architecture/pkg/validation"
@@ -14,11 +14,11 @@ import (
 
 type UserHandler struct {
 	logger *zap.Logger
-	userUsecase domain.UserUsecase
+	userUsecase entity.UserUsecase
 }
 
 // New user handler
-func NewUserHandler(r chi.Router, userUsecase domain.UserUsecase, logger *zap.Logger)  {
+func NewUserHandler(r chi.Router, userUsecase entity.UserUsecase, logger *zap.Logger)  {
 	handler := UserHandler{
 		userUsecase: userUsecase,
 		logger: logger,
@@ -30,8 +30,8 @@ func NewUserHandler(r chi.Router, userUsecase domain.UserUsecase, logger *zap.Lo
 	r.Delete("/user/{id}", handler.delete())
 }
 
-// convert domain user to user model
-func (uh *UserHandler) convert(user *domain.User) *User  {
+// convert entity user to user model
+func (uh *UserHandler) convert(user *entity.User) *User  {
 	return &User{
 		ID        : user.ID,
 		Status    : user.Status,
@@ -45,7 +45,7 @@ func (uh *UserHandler) convert(user *domain.User) *User  {
 }
 
 // convert items
-func (uh *UserHandler) convertItems(items []*domain.User) []*User  {
+func (uh *UserHandler) convertItems(items []*entity.User) []*User  {
 	var users []*User
 	for _, item := range items  {
 		users = append(users, uh.convert(item))
@@ -75,7 +75,7 @@ func (uh *UserHandler) store() http.HandlerFunc {
 		}
 
 		ctx  := r.Context()
-		user := domain.User{
+		user := entity.User{
 			Status    : userRequest.Status,
 			Email     : userRequest.Email,
 			Phone     : userRequest.Phone,
@@ -121,7 +121,7 @@ func (uh *UserHandler) update() http.HandlerFunc  {
 		}
 
 		ctx  := r.Context()
-		user := domain.User{
+		user := entity.User{
 			ID        : userRequest.ID,
 			Status    : userRequest.Status,
 			Email     : userRequest.Email,

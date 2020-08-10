@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/Jamshid90/go-clean-architecture/pkg/config"
-	"github.com/Jamshid90/go-clean-architecture/pkg/domain"
+	"github.com/Jamshid90/go-clean-architecture/pkg/entity"
 	"github.com/Jamshid90/go-clean-architecture/pkg/errors"
 	"github.com/Jamshid90/go-clean-architecture/pkg/hash"
 	"github.com/Jamshid90/go-clean-architecture/pkg/http/rest/request"
@@ -19,12 +19,12 @@ import (
 type AuthHandler struct {
 	logger *zap.Logger
 	config *config.Config
-	userUsecase domain.UserUsecase
-	refreshTokenUsecase domain.RefreshTokenUsecase
+	userUsecase entity.UserUsecase
+	refreshTokenUsecase entity.RefreshTokenUsecase
 }
 
 // New user handler
-func NewAuthHandler(r chi.Router, userUsecase domain.UserUsecase, refreshTokenUsecase domain.RefreshTokenUsecase, config *config.Config, logger *zap.Logger)  {
+func NewAuthHandler(r chi.Router, userUsecase entity.UserUsecase, refreshTokenUsecase entity.RefreshTokenUsecase, config *config.Config, logger *zap.Logger)  {
 	handler := AuthHandler{
 		logger: logger,
 		config: config,
@@ -82,7 +82,7 @@ func (a *AuthHandler) login() http.HandlerFunc {
 		}
 
 		// create refresh token
-		if err = a.refreshTokenUsecase.Store(ctx, &domain.RefreshToken{
+		if err = a.refreshTokenUsecase.Store(ctx, &entity.RefreshToken{
 			UserID: user.ID,
 			Token: refresh_token,
 		}); err != nil {
@@ -138,8 +138,8 @@ func (a *AuthHandler) signup() http.HandlerFunc {
 		}
 
 		ctx  := r.Context()
-		user := domain.User{
-			Status    : domain.USER_STATUS_ACTIVE,
+		user := entity.User{
+			Status    : entity.USER_STATUS_ACTIVE,
 			Email     : signupRequest.Email,
 			Phone     : signupRequest.Phone,
 			Gender    : signupRequest.Gender,
@@ -177,7 +177,7 @@ func (a *AuthHandler) signup() http.HandlerFunc {
 // logout
 func (a *AuthHandler) logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, ok := r.Context().Value("user").(*domain.User)
+		user, ok := r.Context().Value("user").(*entity.User)
 		if !ok {
 			response.Error(w, r, errors.ErrInternalServerError, http.StatusInternalServerError)
 			return
@@ -239,7 +239,7 @@ func (a *AuthHandler) refreshToken() http.HandlerFunc {
 		}
 
 		// create refresh token
-		if err = a.refreshTokenUsecase.Store(ctx, &domain.RefreshToken{
+		if err = a.refreshTokenUsecase.Store(ctx, &entity.RefreshToken{
 			UserID: refreshToken.UserID,
 			Token: refresh_token,
 		}); err != nil {

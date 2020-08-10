@@ -4,7 +4,7 @@ import "go.uber.org/zap"
 
 func NewDevZapLogger(level string) (*zap.Logger, error) {
 	configZap := zap.NewDevelopmentConfig()
-	configZap.OutputPaths = []string{"stdout", "./logs"}
+	configZap.OutputPaths = []string{"stdout", "./log"}
 	configZap.Development = true
 	configZap.DisableStacktrace = true
 	configZap.Encoding = "console"
